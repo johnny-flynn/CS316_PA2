@@ -260,11 +260,6 @@ class Player extends Body {
 		// update position
 		super.update(delta_time);
 
-		// Check if dead
-		if (this.isDead()) {
-			this.remove();
-		}
-
 		// clip to screen
 		this.position.x = Math.min(Math.max(0, this.position.x), config.canvas_size.width);
 		this.position.y = Math.min(Math.max(0, this.position.y), config.canvas_size.height);
@@ -502,6 +497,8 @@ function draw(graphics) {
 
 	// game over screen
 	if (player.isDead()) {
+		player.remove();
+		graphics.fillStyle = "#000000"
 		graphics.font = "30px Arial";
 		graphics.textAlign = "center";
 		graphics.fillText('Game Over', config.canvas_size.width / 2, config.canvas_size.height / 2);
