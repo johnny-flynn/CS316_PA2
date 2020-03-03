@@ -236,6 +236,26 @@ class Player extends Body {
 			You can also log the current state of the player's controller with the following code
 			console.log(this.controller);
 		 */
+		console.log(this.controller);
+		if (this.controller.move_x == 0) {
+			this.velocity.x = 0;
+		}
+		if (this.controller.move_x == 1) {
+			this.velocity.x = 50;
+		}
+		if (this.controller.move_x == -1) {
+			this.velocity.x = -50;
+		}
+		if (this.controller.move_y == 0) {
+			this.velocity.y = 0;
+		}
+		if (this.controller.move_y == 1) {
+			this.velocity.y = 50;
+		}
+		if (this.controller.move_y == -1) {
+			this.velocity.y = -50;
+		}
+		console.log(this.position.x);
 
 		// update position
 		super.update(delta_time);
