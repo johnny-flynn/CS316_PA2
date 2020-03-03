@@ -37,23 +37,7 @@ class InputHandler {
 	 * @param {Object} event The keydown event
 	 */
 	keydown(event) {
-		// ignore event handling if they are holding down the button
-		if (event.repeat || event.isComposing || event.keyCode === 229)
-			return;
-	
-		// check if axis mapping exists
-		if (this.key_code_mappings.axis.hasOwnProperty(event.keyCode)) {
-			const mapping = this.key_code_mappings.axis[event.keyCode];
-			this.player.controller[mapping.state] += mapping.mod;
-			console.log(`input_handler[axis:${mapping.state} state:${this.player.controller[mapping.state]}]`);
-		}
-	
-		// check if button mapping exists
-		if (this.key_code_mappings.button.hasOwnProperty(event.keyCode)) {
-			const mapping = this.key_code_mappings.button[event.keyCode];
-			this.player.controller[mapping.state] = true;
-			console.log(`input_handler[button:${mapping.state} state:${this.player.controller[mapping.state]}]`);
-		}
+		this.player.raw_input[event.keyCode] = true;
 	}
 
 	/**
@@ -62,21 +46,36 @@ class InputHandler {
 	 * @param {Object} event The keyup event
 	 */
 	keyup(event) {
-		if (event.isComposing || event.keyCode === 229)
-			return;
+		delete this.player.raw_input[event.keyCode];
+	}
 
-		// check if axis mapping exists
-		if (this.key_code_mappings.axis.hasOwnProperty(event.keyCode)) {
-			const mapping = this.key_code_mappings.axis[event.keyCode];
-			this.player.controller[mapping.state] -= mapping.mod;
-			console.log(`input_handler[axis:${mapping.state} state:${this.player.controller[mapping.state]}]`);
-		}
-	
-		// check if button mapping exists
-		if (this.key_code_mappings.button.hasOwnProperty(event.keyCode)) {
-			const mapping = this.key_code_mappings.button[event.keyCode];
+	resetController() {
+		// reset all buttons to false
+		for (let mapping of Object.values(this.key_code_mappings.button)) {
 			this.player.controller[mapping.state] = false;
-			console.log(`input_handler[button:${mapping.state} state:${this.player.controller[mapping.state]}]`);
+		}
+
+		// reset all axis to zero
+		for (let mapping of Object.values(this.key_code_mappings.axis)) {
+			this.player.controller[mapping.state] = 0;
+		}
+	}
+
+	pollController() {
+		this.resetController();
+
+		// poll all bound buttons
+		for (let [key_code, mapping] of Object.entries(this.key_code_mappings.button)) {
+			if (this.player.raw_input[key_code] === true) {
+				this.player.controller[mapping.state] = true;
+			}
+		}
+
+		// poll all bound axis
+		for (let [key_code, mapping] of Object.entries(this.key_code_mappings.axis)) {
+			if (this.player.raw_input[key_code] === true) {
+				this.player.controller[mapping.state] += mapping.mod;
+			}
 		}
 	}
 }
@@ -172,6 +171,7 @@ class Player extends Body {
 		move_y: 0,
 		action_1: false
 	};
+	raw_input = {};
 	speed = 100;
 	input_handler = null;
 
@@ -326,6 +326,9 @@ var collision_handler = null;
  * @param {Number} delta_time Time since last update in seconds.
  */
 function update(delta_time) {
+	// poll input
+	player.input_handler.pollController();
+
 	// move entities
 	Object.values(entities).forEach(entity => {
 		entity.update(delta_time);
