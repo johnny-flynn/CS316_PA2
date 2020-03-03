@@ -455,6 +455,7 @@ class Projectile extends Body {
 				if (entity1.constructor.name  == ('Enemy' || 'Projectile')) {
 				entity1.remove();
 				entity2.remove();
+				enemiesHit++;
 				}
 			}
 		}
@@ -548,6 +549,11 @@ var projectile_spawner = null;
 
 var projectiles = [];
 
+var enemies = 0;
+
+var score = 0;
+
+var enemiesHit = 0;
 
 /**
  * This function updates the state of the world given a delta time.
@@ -629,10 +635,11 @@ class EnemySpawner {
 	update(delta_time){
 		this.timer.accumulated += delta_time;
 		console.log(this.timer.accumulated);
-		if (this.timer.accumulated > 1) {
+		if (this.timer.accumulated > .2) {
 			entities.push(new Enemy());
 			entities.push(new Enemy());
-			this.timer.accumulated -= 1;
+			this.timer.accumulated -= .2;
+			enemies += 2;
 		}
 	}
 }
@@ -678,11 +685,16 @@ function loop(curr_time) {
 		delta_time -= config.update_rate.seconds;
 		last_time = curr_time;
 		loop_count++;
-
+		score = Math.floor(30 * enemiesHit + curr_time);
 		game_state.innerHTML = `loop count ${loop_count}`;
-	}
+		Time.innerHTML = `Time alive: ${Math.floor(curr_time)}`;
+		Enemies.innerHTML = `Enemies Spawned: ${enemies}`;
+		PlayerScore.innerHTML = `Score: ${score}`;
 
+	}
+	if (!player.isDead()){
 	window.requestAnimationFrame(loop);
+	}
 }
 
 function start() {
