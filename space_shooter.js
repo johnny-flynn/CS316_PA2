@@ -241,19 +241,19 @@ class Player extends Body {
 			this.velocity.x = 0;
 		}
 		if (this.controller.move_x == 1) {
-			this.velocity.x = 50;
+			this.velocity.x = 150;
 		}
 		if (this.controller.move_x == -1) {
-			this.velocity.x = -50;
+			this.velocity.x = -150;
 		}
 		if (this.controller.move_y == 0) {
 			this.velocity.y = 0;
 		}
 		if (this.controller.move_y == 1) {
-			this.velocity.y = 50;
+			this.velocity.y = 150;
 		}
 		if (this.controller.move_y == -1) {
-			this.velocity.y = -50;
+			this.velocity.y = -150;
 		}
 		console.log(this.position.x);
 
@@ -341,7 +341,7 @@ class Enemy extends Body {
 			You can also log the current state of the player's controller with the following code
 			console.log(this.controller);
 		 */
-		this.velocity.y = 50;
+		this.velocity.y = 70;
 
 		// update position
 		super.update(delta_time);
@@ -349,6 +349,9 @@ class Enemy extends Body {
 		// clip to screen
 		this.position.x = Math.min(Math.max(0, this.position.x), config.canvas_size.width);
 		this.position.y = Math.min(Math.max(-100, this.position.y), config.canvas_size.height);
+		if (this.position.y == config.canvas_size.height){
+			queued_entities_for_removal.push(this.id);
+		}
 	}
 }
 
@@ -504,7 +507,8 @@ class EnemySpawner {
 		this.timer.accumulated += delta_time;
 		console.log(this.timer.accumulated);
 		if (this.timer.accumulated > 1) {
-			enemies.push(new Enemy());
+			entities.push(new Enemy());
+			entities.push(new Enemy());
 			this.timer.accumulated -= 1;
 		}
 	}
