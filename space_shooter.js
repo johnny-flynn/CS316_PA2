@@ -260,6 +260,11 @@ class Player extends Body {
 		// update position
 		super.update(delta_time);
 
+		// Check if dead
+		if (this.isDead()) {
+			this.remove();
+		}
+
 		// clip to screen
 		this.position.x = Math.min(Math.max(0, this.position.x), config.canvas_size.width);
 		this.position.y = Math.min(Math.max(0, this.position.y), config.canvas_size.height);
@@ -306,19 +311,19 @@ class Enemy extends Body {
 		graphics.beginPath();
 		graphics.moveTo(
 			this.position.x,
-			this.position.y - this.half_size.height
-		);
-		graphics.lineTo(
-			this.position.x + this.half_size.width,
 			this.position.y + this.half_size.height
 		);
 		graphics.lineTo(
 			this.position.x - this.half_size.width,
-			this.position.y + this.half_size.height
+			this.position.y - this.half_size.height
+		);
+		graphics.lineTo(
+			this.position.x + this.half_size.width,
+			this.position.y - this.half_size.height
 		);
 		graphics.lineTo(
 			this.position.x,
-			this.position.y - this.half_size.height
+			this.position.y + this.half_size.height
 		);
 		graphics.stroke();
 
@@ -346,11 +351,21 @@ class Enemy extends Body {
 		// update position
 		super.update(delta_time);
 
+		// Check if touching player
+		if (this.position.x < player.position.x + player.size.width &&
+			this.position.x + this.size.width > player.position.x &&
+			this.position.y < player.position.y + player.size.height &&
+			this.position.y + this.size.height > player.position.y){
+				console.log("COLLISION DETECTED");
+				this.remove();
+				player.health -= 25;
+			}
+
 		// clip to screen
 		this.position.x = Math.min(Math.max(0, this.position.x), config.canvas_size.width);
 		this.position.y = Math.min(Math.max(-100, this.position.y), config.canvas_size.height);
 		if (this.position.y == config.canvas_size.height){
-			queued_entities_for_removal.push(this.id);
+			this.remove();
 		}
 	}
 }
@@ -429,8 +444,6 @@ var enemy_spawner = null;
 /* You must implement this, assign it a value in the start() function */
 var collision_handler = null;
 
-var enemies = [];
-var timer = 1;
 
 /**
  * This function updates the state of the world given a delta time.
