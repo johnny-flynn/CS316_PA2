@@ -280,7 +280,7 @@ class Enemy extends Body {
 		action_1: false
 	};
 	raw_input = {};
-	speed = 100;
+	speed = 0;
 	input_handler = null;
 
 	/**
@@ -365,6 +365,111 @@ class Enemy extends Body {
 	}
 }
 
+/**
+ * Represents an player body. Extends a Body by handling input binding and controller management.
+ * 
+ * @typedef Projectile
+ */
+class Projectile extends Body {
+	// this controller object is updated by the bound input_handler
+	controller = {
+		move_x: 0,
+		move_y: 0,
+	};
+	raw_input = {};
+	speed = 100;
+	input_handler = null;
+
+	/**
+	 * Creates a new enemy with the default attributes.
+	 */
+	constructor() {
+		super();
+
+		// we always want our new players to be at this location
+		this.position = {
+			x: player.position.x,
+			y: player.position.y - 10
+		};
+	}
+
+	/**
+	 * Draws the player as a triangle centered on the player's location.
+	 * 
+	 * @param {CanvasRenderingContext2D} graphics The current graphics context.
+	 */
+	draw(graphics) {
+		graphics.strokeStyle = '#000000';
+		graphics.beginPath();
+		graphics.moveTo(
+			this.position.x,
+			this.position.y + this.half_size.height
+		);
+		graphics.lineTo(
+			this.position.x - this.half_size.width,
+			this.position.y - this.half_size.height
+		);
+		graphics.lineTo(
+			this.position.x + this.half_size.width,
+			this.position.y - this.half_size.height
+		);
+		graphics.lineTo(
+			this.position.x,
+			this.position.y + this.half_size.height
+		);
+		graphics.stroke();
+
+		// draw velocity lines
+		super.draw(graphics);
+	}
+
+	/**
+	 * Updates the player given the state of the player's controller.
+	 * 
+	 * @param {Number} delta_time Time in seconds since last update call.
+	 */
+	update(delta_time) {
+		/*
+			implement player movement here!
+
+			I recommend you look at the development console's log to get a hint as to how you can use the
+			controllers state to implement movement.
+
+			You can also log the current state of the player's controller with the following code
+			console.log(this.controller);
+		 */
+		this.velocity.y = -300;
+
+		// update position
+		super.update(delta_time);
+
+		// Check if touching player
+		Object.values(entities).forEach(entity1 => {
+		Object.values(entities).forEach(entity2 => {
+		if(entity1.id != entity2.id){
+		if (entity1.position.x < entity2.position.x + entity2.size.width &&
+			entity1.position.x + entity1.size.width > entity2.position.x &&
+			entity1.position.y < entity2.position.y + entity2.size.height &&
+			entity1.position.y + entity1.size.height > entity2.position.y){
+				console.log("COLLISION DETECTED");
+				if (entity1.constructor.name  == ('Enemy' || 'Projectile')) {
+				entity1.remove();
+				entity2.remove();
+				}
+			}
+		}
+		});
+	});
+
+		// clip to screen
+		this.position.x = Math.min(Math.max(0, this.position.x), config.canvas_size.width);
+		this.position.y = Math.min(Math.max(-100, this.position.y), config.canvas_size.height);
+		if (this.position.y == 0){
+			this.remove();
+		}
+	}
+}
+
 /* 
 ------------------------------
 ------ CONFIG SECTION -------- 
@@ -439,6 +544,10 @@ var enemy_spawner = null;
 /* You must implement this, assign it a value in the start() function */
 var collision_handler = null;
 
+var projectile_spawner = null;
+
+var projectiles = [];
+
 
 /**
  * This function updates the state of the world given a delta time.
@@ -468,6 +577,10 @@ function update(delta_time) {
 	// spawn enemies
 	if (enemy_spawner != null) {
 		enemy_spawner.update(delta_time);
+	}
+
+	if (projectile_spawner != null) {
+		projectile_spawner.update(delta_time);
 	}
 
 	// allow the player to restart when dead
@@ -524,6 +637,20 @@ class EnemySpawner {
 	}
 }
 
+class ProjectileSpawner {
+	cooldown = {
+		seconds: 1
+	};
+	update(delta_time){
+		console.log(projectiles);
+		this.cooldown.seconds += delta_time;
+		if (player.controller.action_1 == true && this.cooldown.seconds > .5 ) {
+			projectiles.push(new Projectile());
+			this.cooldown.seconds = 0;
+		}
+	}
+}
+
 /**
  * This is the main driver of the game. This is called by the window requestAnimationFrame event.
  * This function calls the update and draw methods at static intervals. That means regardless of
@@ -562,7 +689,7 @@ function start() {
 	entities = [];
 	queued_entities_for_removal = [];
 	player = new Player();
-	
+	projectile_spawner = new ProjectileSpawner();
 	enemy_spawner = new EnemySpawner();
 	// collision_handler = your implementation
 }
