@@ -426,6 +426,9 @@ var enemy_spawner = null;
 /* You must implement this, assign it a value in the start() function */
 var collision_handler = null;
 
+var enemies = [];
+var timer = 1;
+
 /**
  * This function updates the state of the world given a delta time.
  * 
@@ -493,6 +496,20 @@ function draw(graphics) {
 	}
 }
 
+class EnemySpawner {
+	timer = {
+		accumulated: 0
+	};
+	update(delta_time){
+		this.timer.accumulated += delta_time;
+		console.log(this.timer.accumulated);
+		if (this.timer.accumulated > 1) {
+			enemies.push(new Enemy());
+			this.timer.accumulated -= 1;
+		}
+	}
+}
+
 /**
  * This is the main driver of the game. This is called by the window requestAnimationFrame event.
  * This function calls the update and draw methods at static intervals. That means regardless of
@@ -532,7 +549,7 @@ function start() {
 	queued_entities_for_removal = [];
 	player = new Player();
 	
-	enemy_spawner = new Enemy();
+	enemy_spawner = new EnemySpawner();
 	// collision_handler = your implementation
 }
 
@@ -541,3 +558,4 @@ start();
 
 // start the loop
 window.requestAnimationFrame(loop);
+
