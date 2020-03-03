@@ -266,6 +266,92 @@ class Player extends Body {
 	}
 }
 
+
+/**
+ * Represents an player body. Extends a Body by handling input binding and controller management.
+ * 
+ * @typedef Enemy
+ */
+class Enemy extends Body {
+	// this controller object is updated by the bound input_handler
+	controller = {
+		move_x: 0,
+		move_y: 0,
+		action_1: false
+	};
+	raw_input = {};
+	speed = 100;
+	input_handler = null;
+
+	/**
+	 * Creates a new enemy with the default attributes.
+	 */
+	constructor() {
+		super();
+
+		// we always want our new players to be at this location
+		this.position = {
+			x: Math.floor(Math.random() * 300) + 1,
+			y: config.canvas_size.height - 600
+		};
+	}
+
+	/**
+	 * Draws the player as a triangle centered on the player's location.
+	 * 
+	 * @param {CanvasRenderingContext2D} graphics The current graphics context.
+	 */
+	draw(graphics) {
+		graphics.strokeStyle = '#000000';
+		graphics.beginPath();
+		graphics.moveTo(
+			this.position.x,
+			this.position.y - this.half_size.height
+		);
+		graphics.lineTo(
+			this.position.x + this.half_size.width,
+			this.position.y + this.half_size.height
+		);
+		graphics.lineTo(
+			this.position.x - this.half_size.width,
+			this.position.y + this.half_size.height
+		);
+		graphics.lineTo(
+			this.position.x,
+			this.position.y - this.half_size.height
+		);
+		graphics.stroke();
+
+		// draw velocity lines
+		super.draw(graphics);
+	}
+
+	/**
+	 * Updates the player given the state of the player's controller.
+	 * 
+	 * @param {Number} delta_time Time in seconds since last update call.
+	 */
+	update(delta_time) {
+		/*
+			implement player movement here!
+
+			I recommend you look at the development console's log to get a hint as to how you can use the
+			controllers state to implement movement.
+
+			You can also log the current state of the player's controller with the following code
+			console.log(this.controller);
+		 */
+		this.velocity.y = 50;
+
+		// update position
+		super.update(delta_time);
+
+		// clip to screen
+		this.position.x = Math.min(Math.max(0, this.position.x), config.canvas_size.width);
+		this.position.y = Math.min(Math.max(-100, this.position.y), config.canvas_size.height);
+	}
+}
+
 /* 
 ------------------------------
 ------ CONFIG SECTION -------- 
@@ -446,7 +532,7 @@ function start() {
 	queued_entities_for_removal = [];
 	player = new Player();
 	
-	// enemy_spawner = your implementation
+	enemy_spawner = new Enemy();
 	// collision_handler = your implementation
 }
 
