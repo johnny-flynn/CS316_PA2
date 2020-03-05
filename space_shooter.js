@@ -452,8 +452,18 @@ class Projectile extends Body {
 	}
 }
 
+/**
+ * Represents a collision handler.
+ * 
+ * @typedef collisionHandler
+ */
 class collisionHandler {
 	update(delta_time){
+		/**
+		 * Checks all entities to see whether they are touching a projectile, delete it if it is.
+		 * 
+		 * @param {Array<Number>} entities 
+		 */
 	Object.values(entities).forEach(entity1 => {
 		Object.values(entities).forEach(entity2 => {
 		if(entity1.id != entity2.id){
@@ -461,9 +471,12 @@ class collisionHandler {
 			entity1.position.x + entity1.size.width > entity2.position.x &&
 			entity1.position.y < entity2.position.y + entity2.size.height &&
 			entity1.position.y + entity1.size.height > entity2.position.y){
+				//If a projectile makes contact with an enemy, delete both entities.
 				if (entity1.constructor.name  == 'Projectile') {
 				entity1.remove();
 				entity2.remove();
+
+				//keep track of enemies hit
 				enemiesHit++;
 				}
 			}
@@ -541,22 +554,28 @@ var queued_entities_for_removal = null;
 /** @type {Player} The active player */
 var player = null;
 
-/* You must implement this, assign it a value in the start() function */
+/** @type {EnemySpawner} Handles the spawning of enemy within intervals */ 
 var enemy_spawner = null;
 
-/* You must implement this, assign it a value in the start() function */
+/** @type {collisionHandler} Handles collision checking with all entities in relation to projectile */
 var collision_handler = null;
 
+/** @type {ProjectileSpawner} Handles projectile spawning by the player */
 var projectile_spawner = null;
 
+/** @type {Array<Number>} Keeps track of the projectiles */
 var projectiles = [];
 
+/** @type {Number} Keeps track of the number of enemies spawned */
 var enemies = 0;
 
+/** @type {Number} Keeps track of the score */
 var score = 0;
 
+/** @type {Number} Keeps track of enemies killed */
 var enemiesHit = 0;
-var timer = 0;
+
+/** @type {Number} To keep track at what time the game restarts in order to give an accurate time alive */
 var spawnedat = 0;
 
 /**
