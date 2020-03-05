@@ -1,4 +1,11 @@
+/**
+ * 
+ * @authors John Flynn, Stefan Ignat
+ * This is a space shooter game designed to be played in an internet browser
+ * 
+ */
 /* 
+
 ------------------------------
 ------- INPUT SECTION -------- 
 ------------------------------
