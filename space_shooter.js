@@ -217,8 +217,6 @@ class Player extends Body {
 		);
 		graphics.stroke();
 
-		// draw velocity lines
-		super.draw(graphics);
 	}
 
 	/**
@@ -241,19 +239,19 @@ class Player extends Body {
 			this.velocity.x = 0;
 		}
 		if (this.controller.move_x == 1) {
-			this.velocity.x = 150;
+			this.velocity.x = 250;
 		}
 		if (this.controller.move_x == -1) {
-			this.velocity.x = -150;
+			this.velocity.x = -250;
 		}
 		if (this.controller.move_y == 0) {
 			this.velocity.y = 0;
 		}
 		if (this.controller.move_y == 1) {
-			this.velocity.y = 150;
+			this.velocity.y = 250;
 		}
 		if (this.controller.move_y == -1) {
-			this.velocity.y = -150;
+			this.velocity.y = -250;
 		}
 		console.log(this.position.x);
 
@@ -339,7 +337,7 @@ class Enemy extends Body {
 			You can also log the current state of the player's controller with the following code
 			console.log(this.controller);
 		 */
-		this.velocity.y = 70;
+		this.velocity.y = 270;
 
 		// update position
 		super.update(delta_time);
@@ -391,33 +389,36 @@ class Projectile extends Body {
 	}
 
 	/**
-	 * Draws the player as a triangle centered on the player's location.
+	 * Draws the projectile as a blue filled rectangle.
 	 * 
 	 * @param {CanvasRenderingContext2D} graphics The current graphics context.
 	 */
 	draw(graphics) {
-		graphics.strokeStyle = '#000000';
+		graphics.strokeStyle = '#0000FF';
 		graphics.beginPath();
 		graphics.moveTo(
-			this.position.x,
+			this.position.x - 2,
 			this.position.y + this.half_size.height
 		);
 		graphics.lineTo(
-			this.position.x - this.half_size.width,
+			this.position.x + 2,
+			this.position.y + this.half_size.height
+		);
+		graphics.lineTo(
+			this.position.x + 2,
 			this.position.y - this.half_size.height
 		);
 		graphics.lineTo(
-			this.position.x + this.half_size.width,
+			this.position.x - 2,
 			this.position.y - this.half_size.height
 		);
 		graphics.lineTo(
-			this.position.x,
+			this.position.x - 2,
 			this.position.y + this.half_size.height
 		);
 		graphics.stroke();
-
-		// draw velocity lines
-		super.draw(graphics);
+		graphics.fillStyle = '#0000FF';
+		graphics.fill();
 	}
 
 	/**
@@ -435,7 +436,7 @@ class Projectile extends Body {
 			You can also log the current state of the player's controller with the following code
 			console.log(this.controller);
 		 */
-		this.velocity.y = -300;
+		this.velocity.y = -350;
 
 		// update position
 		super.update(delta_time);
@@ -659,17 +660,19 @@ class EnemySpawner {
 		accumulated: 0
 	};
 	/**
-	 * The update function takes time as a parameter and spawn enemies two at a time every 1/5 of a second. 
+	 * The update function takes time as a parameter and spawn enemies four at a time every 1/10 of a second. 
 	 * 
 	 * @param {Number} delta_time 
 	 */
 	update(delta_time){
 		this.timer.accumulated += delta_time;
-		if (this.timer.accumulated > .2) {
+		if (this.timer.accumulated > .1) {
 			entities.push(new Enemy());
 			entities.push(new Enemy());
-			this.timer.accumulated -= .2;
-			enemies += 2;
+			entities.push(new Enemy());
+			entities.push(new Enemy());
+			this.timer.accumulated -= .1;
+			enemies += 4;
 		}
 	}
 }
