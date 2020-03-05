@@ -389,7 +389,7 @@ class Projectile extends Body {
 		// we always want our new players to be at this location
 		this.position = {
 			x: player.position.x,
-			y: player.position.y - 10
+			y: player.position.y - 14
 		};
 	}
 
