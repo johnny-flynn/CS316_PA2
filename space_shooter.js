@@ -632,11 +632,18 @@ function draw(graphics) {
 		graphics.fillText('press space to restart', config.canvas_size.width / 2, 18 + config.canvas_size.height / 2);
 	}
 }
-
+/**
+ * This class handles the spawning of new enimies
+ */
 class EnemySpawner {
 	timer = {
 		accumulated: 0
 	};
+	/**
+	 * The update function takes time as a parameter and spawn enemies two at a time every 1/5 of a second. 
+	 * 
+	 * @param {Number} delta_time 
+	 */
 	update(delta_time){
 		this.timer.accumulated += delta_time;
 		if (this.timer.accumulated > .2) {
@@ -647,11 +654,18 @@ class EnemySpawner {
 		}
 	}
 }
-
+/**
+ * This class facilitates the spawning of the projectiles the player shoots
+ */
 class ProjectileSpawner {
 	cooldown = {
 		seconds: 1
 	};
+	/**
+	 * This function does the actual spawning of the projectile object.
+	 * 
+	 * @param {Number} delta_time 
+	 */
 	update(delta_time){
 		this.cooldown.seconds += delta_time;
 		if (player.controller.action_1 == true && this.cooldown.seconds > .5 ) {
