@@ -579,6 +579,12 @@ var enemiesHit = 0;
 /** @type {Number} To keep track at what time the game restarts in order to give an accurate time alive */
 var spawnedat = 0;
 
+/** @type {Number} Keeps track of the High Score */
+var HighScore = 0;
+
+/** @type {Boolean} To know if there's a new high score */
+newScore = false;
+
 /**
  * This function updates the state of the world given a delta time.
  * 
@@ -641,7 +647,6 @@ function draw(graphics) {
 	// game over screen
 	if (player.isDead()) {
 		player.remove();
-		diedat = loop.last_time;
 		graphics.fillStyle = "#000000"
 		graphics.font = "30px Arial";
 		graphics.textAlign = "center";
@@ -650,6 +655,13 @@ function draw(graphics) {
 		graphics.font = "12px Arial";
 		graphics.textAlign = "center";
 		graphics.fillText('press space to restart', config.canvas_size.width / 2, 18 + config.canvas_size.height / 2);
+		if (newScore == true) {
+		graphics.fillStyle = "#FFD700"
+		graphics.font = "30px Arial";
+		graphics.textAlign = "center";
+		graphics.fillText('New High Score!', config.canvas_size.width / 2,  config.canvas_size.height / 2 - 30);
+
+		}
 	}
 }
 /**
@@ -723,16 +735,25 @@ function loop(curr_time) {
 
 		delta_time -= config.update_rate.seconds;
 		last_time = curr_time;
+		console.log(HighScore);
 		if (player.isDead()){
 			spawnedat = last_time;
 		}
 		loop_count++;
 		if (!player.isDead()){
+
+			//check for new high score
+			if (HighScore < score) {
+				HighScore = score;
+				newScore = true;
+			}
+
 		score = Math.floor(30 * enemiesHit + (last_time-spawnedat));
 		game_state.innerHTML = `loop count ${loop_count}`;
 		Time.innerHTML = `Time alive: ${Math.floor(last_time-spawnedat)}`;
 		Enemies.innerHTML = `Enemies Spawned: ${enemies}`;
 		PlayerScore.innerHTML = `Score: ${score}`;
+		High.innerHTML = `High Score: ${HighScore}`;
 		}
 
 	}
@@ -740,6 +761,7 @@ function loop(curr_time) {
 }
 
 function start() {
+	newScore = false;
 	loop_count = 0;
 	enemies = 0;
 	enemiesHit = 0;
