@@ -686,12 +686,11 @@ function loop(curr_time) {
 		if (player.isDead()){
 			spawnedat = last_time;
 		}
-		timer = last_time;
 		loop_count++;
 		if (!player.isDead()){
-		score = Math.floor(30 * enemiesHit + (timer-spawnedat));
+		score = Math.floor(30 * enemiesHit + (last_time-spawnedat));
 		game_state.innerHTML = `loop count ${loop_count}`;
-		Time.innerHTML = `Time alive: ${Math.floor(timer-spawnedat)}`;
+		Time.innerHTML = `Time alive: ${Math.floor(last_time-spawnedat)}`;
 		Enemies.innerHTML = `Enemies Spawned: ${enemies}`;
 		PlayerScore.innerHTML = `Score: ${score}`;
 		}
@@ -701,9 +700,7 @@ function loop(curr_time) {
 }
 
 function start() {
-	timer = 0;
 	loop_count = 0;
-	last_time = 0;
 	enemies = 0;
 	enemiesHit = 0;
 	score = 0;
