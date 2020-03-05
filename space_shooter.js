@@ -351,7 +351,6 @@ class Enemy extends Body {
 			this.position.x + this.size.width > player.position.x &&
 			this.position.y < player.position.y + player.size.height &&
 			this.position.y + this.size.height > player.position.y){
-				console.log("COLLISION DETECTED");
 				this.remove();
 				player.health -= 25;
 			}
@@ -451,7 +450,6 @@ class Projectile extends Body {
 			entity1.position.x + entity1.size.width > entity2.position.x &&
 			entity1.position.y < entity2.position.y + entity2.size.height &&
 			entity1.position.y + entity1.size.height > entity2.position.y){
-				console.log("COLLISION DETECTED");
 				if (entity1.constructor.name  == 'Projectile') {
 				entity1.remove();
 				entity2.remove();
@@ -554,6 +552,8 @@ var enemies = 0;
 var score = 0;
 
 var enemiesHit = 0;
+var timer = 0;
+var spawnedat = 0;
 
 /**
  * This function updates the state of the world given a delta time.
@@ -617,6 +617,7 @@ function draw(graphics) {
 	// game over screen
 	if (player.isDead()) {
 		player.remove();
+		diedat = loop.last_time;
 		graphics.fillStyle = "#000000"
 		graphics.font = "30px Arial";
 		graphics.textAlign = "center";
@@ -634,7 +635,6 @@ class EnemySpawner {
 	};
 	update(delta_time){
 		this.timer.accumulated += delta_time;
-		console.log(this.timer.accumulated);
 		if (this.timer.accumulated > .2) {
 			entities.push(new Enemy());
 			entities.push(new Enemy());
@@ -649,7 +649,6 @@ class ProjectileSpawner {
 		seconds: 1
 	};
 	update(delta_time){
-		console.log(projectiles);
 		this.cooldown.seconds += delta_time;
 		if (player.controller.action_1 == true && this.cooldown.seconds > .5 ) {
 			projectiles.push(new Projectile());
@@ -684,22 +683,30 @@ function loop(curr_time) {
 
 		delta_time -= config.update_rate.seconds;
 		last_time = curr_time;
+		if (player.isDead()){
+			spawnedat = last_time;
+		}
+		timer = last_time;
 		loop_count++;
 		if (!player.isDead()){
-		score = Math.floor(30 * enemiesHit + curr_time);
+		score = Math.floor(30 * enemiesHit + (timer-spawnedat));
 		game_state.innerHTML = `loop count ${loop_count}`;
-		Time.innerHTML = `Time alive: ${Math.floor(curr_time)}`;
+		Time.innerHTML = `Time alive: ${Math.floor(timer-spawnedat)}`;
 		Enemies.innerHTML = `Enemies Spawned: ${enemies}`;
 		PlayerScore.innerHTML = `Score: ${score}`;
 		}
 
 	}
-	//if (!player.isDead()){
 	window.requestAnimationFrame(loop);
-	//}
 }
 
 function start() {
+	timer = 0;
+	loop_count = 0;
+	last_time = 0;
+	enemies = 0;
+	enemiesHit = 0;
+	score = 0;
 	entities = [];
 	queued_entities_for_removal = [];
 	player = new Player();
