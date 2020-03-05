@@ -452,7 +452,7 @@ class Projectile extends Body {
 			entity1.position.y < entity2.position.y + entity2.size.height &&
 			entity1.position.y + entity1.size.height > entity2.position.y){
 				console.log("COLLISION DETECTED");
-				if (entity1.constructor.name  == ('Enemy' || 'Projectile')) {
+				if (entity1.constructor.name  == 'Projectile') {
 				entity1.remove();
 				entity2.remove();
 				enemiesHit++;
@@ -685,16 +685,18 @@ function loop(curr_time) {
 		delta_time -= config.update_rate.seconds;
 		last_time = curr_time;
 		loop_count++;
+		if (!player.isDead()){
 		score = Math.floor(30 * enemiesHit + curr_time);
 		game_state.innerHTML = `loop count ${loop_count}`;
 		Time.innerHTML = `Time alive: ${Math.floor(curr_time)}`;
 		Enemies.innerHTML = `Enemies Spawned: ${enemies}`;
 		PlayerScore.innerHTML = `Score: ${score}`;
+		}
 
 	}
-	if (!player.isDead()){
+	//if (!player.isDead()){
 	window.requestAnimationFrame(loop);
-	}
+	//}
 }
 
 function start() {
