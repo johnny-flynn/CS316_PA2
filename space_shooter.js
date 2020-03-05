@@ -289,7 +289,7 @@ class Enemy extends Body {
 	constructor() {
 		super();
 
-		// we always want our new players to be at this location
+		// we always want our new enemies to spawn above the canvas
 		this.position = {
 			x: Math.floor(Math.random() * 300) + 1,
 			y: config.canvas_size.height - 600
@@ -297,12 +297,12 @@ class Enemy extends Body {
 	}
 
 	/**
-	 * Draws the player as a triangle centered on the player's location.
+	 * Draws the enemy as a triangle centered on the enemy's location.
 	 * 
 	 * @param {CanvasRenderingContext2D} graphics The current graphics context.
 	 */
 	draw(graphics) {
-		graphics.strokeStyle = '#000000';
+		graphics.strokeStyle = '#FF0000';
 		graphics.beginPath();
 		graphics.moveTo(
 			this.position.x,
@@ -322,8 +322,6 @@ class Enemy extends Body {
 		);
 		graphics.stroke();
 
-		// draw velocity lines
-		super.draw(graphics);
 	}
 
 	/**
@@ -346,7 +344,7 @@ class Enemy extends Body {
 		// update position
 		super.update(delta_time);
 
-		// Check if touching player
+		// Check if touching player by checking the position of the enemy plus its dimensions
 		if (this.position.x < player.position.x + player.size.width &&
 			this.position.x + this.size.width > player.position.x &&
 			this.position.y < player.position.y + player.size.height &&
@@ -443,7 +441,20 @@ class Projectile extends Body {
 		super.update(delta_time);
 
 		// Check if touching player
-		Object.values(entities).forEach(entity1 => {
+		
+
+		// clip to screen
+		this.position.x = Math.min(Math.max(0, this.position.x), config.canvas_size.width);
+		this.position.y = Math.min(Math.max(-100, this.position.y), config.canvas_size.height);
+		if (this.position.y == 0){
+			this.remove();
+		}
+	}
+}
+
+class collisionHandler {
+	update(delta_time){
+	Object.values(entities).forEach(entity1 => {
 		Object.values(entities).forEach(entity2 => {
 		if(entity1.id != entity2.id){
 		if (entity1.position.x < entity2.position.x + entity2.size.width &&
@@ -459,14 +470,7 @@ class Projectile extends Body {
 		}
 		});
 	});
-
-		// clip to screen
-		this.position.x = Math.min(Math.max(0, this.position.x), config.canvas_size.width);
-		this.position.y = Math.min(Math.max(-100, this.position.y), config.canvas_size.height);
-		if (this.position.y == 0){
-			this.remove();
-		}
-	}
+}
 }
 
 /* 
@@ -709,7 +713,7 @@ function start() {
 	player = new Player();
 	projectile_spawner = new ProjectileSpawner();
 	enemy_spawner = new EnemySpawner();
-	// collision_handler = your implementation
+	collision_handler = new collisionHandler();
 }
 
 // start the game
